@@ -57,7 +57,7 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    input, button, select {
+    input, button {
       display: block;
       width: 100%;
       padding: 12px;
@@ -69,7 +69,7 @@
       box-sizing: border-box;
     }
 
-    input, select {
+    input {
       background-color: #fff;
     }
 
@@ -161,9 +161,7 @@
       <h2>Coloque seu nome + a comida típica que irá levar para a festa</h2>
       <form id="formulario">
         <input type="text" id="nome" name="nome" placeholder="Seu nome" required />
-        <select id="comida" name="comida" required>
-          <option value="">Selecione uma comida</option>
-        </select>
+        <input type="text" id="comida" name="comida" placeholder="Comida típica que vai levar" required />
         <button type="submit">Enviar</button>
       </form>
     </div>
@@ -179,71 +177,20 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyLm9Ce0Zvv4tyHE_ebkek9CU4EXwEcvWQX4nKYpdkQnn2tjcR9DG1_JdzKW-eYN16D/exec";
 
-    const opcoesTodas = [
-      "1kg Canjiquinha", "1kg Canjiquinha", "1kg feijão amigo", "1kg feijão amigo", "1kg caldo verde",
-      "1kg caldo verde", "1kg milho verde", "1kg milho verde", "1kg milho verde", "1kg milho verde", "1kg milho verde",
-      "Arroz doce 50 pessoas", "Arroz doce 50 pessoas", "Canjica doce branca 50 pessoas", "Canjica amendoim 50 pessoas",
-      "Cocada 50 pessoas", "Cocada 50 pessoas", "Paçoca 50 pessoas", "Paçoca 50 pessoas", "Pudim leite moça",
-      "Pudim leite moça", "Broa fuba 50 pessoas", "Bolo doce 50 pessoas", "Bolo chocolate 50 pessoas",
-      "Pipoca já pronta 100 pacotes", "Amendoim doce 50 pacotes", "Suspiro quantidade 100 unidades", "Doce de abóbora 50 unidades",
-      "Doce leite 50 unidades", "Molho cachorro quente 50 pessoas", "150 pães de cachorro quente", "2kg salsichão já cozido",
-      "2kg salsichão já cozido", "10 maçãs do amor", "10 maçãs do amor", "10 maçãs do amor", "10 maçãs do amor", "10 maçãs do amor",
-      "100 brigadeiros", "100 salgados", "100 salgados", "Mini pizza", "Mini churros", "Mini pizza frita", "Bolo mandioca 50 pessoas",
-      "1kg caldo verde", "2 cxs bombons", "1 Pote doce de leite 50 pessoas", "1 torta salgada 50 pessoas", "Empadão de Frango", 
-      "Quentão 50 pessoas", 
-    ];
-
     async function carregarComidas() {
       const lista = document.getElementById('lista-comidas');
-      const select = document.getElementById('comida');
       lista.innerHTML = '<li>Carregando...</li>';
 
       try {
         const res = await fetch(API_URL);
         const dados = await res.json();
 
-        // Mostrar lista
         lista.innerHTML = '';
-        const comidasJaEscolhidas = [];
-
         dados.forEach(item => {
           const li = document.createElement('li');
-          li.textContent = `${item.nome} - ${item.comida}`;
+          li.textContent = `${item.comida}`;
           lista.appendChild(li);
-          comidasJaEscolhidas.push(item.comida);
         });
-
-// Contar quantas vezes cada comida foi escolhida
-const contagemEscolhidas = {};
-comidasJaEscolhidas.forEach(comida => {
-  contagemEscolhidas[comida] = (contagemEscolhidas[comida] || 0) + 1;
-});
-
-// Contar quantas vezes cada comida aparece na lista original
-const contagemOriginais = {};
-opcoesTodas.forEach(comida => {
-  contagemOriginais[comida] = (contagemOriginais[comida] || 0) + 1;
-});
-
-// Gerar opções disponíveis
-select.innerHTML = '<option value="">Selecione uma comida</option>';
-let contador = 1;
-const copiasRestantes = {};
-
-// Copiar a lista original mantendo repetições
-opcoesTodas.forEach(opcao => {
-  const escolhidas = contagemEscolhidas[opcao] || 0;
-  const totalDisponivel = contagemOriginais[opcao];
-  const usadas = copiasRestantes[opcao] || 0;
-
-  if (usadas < totalDisponivel - escolhidas) {
-    const option = document.createElement('option');
-    option.value = opcao;
-    option.textContent = `Opção ${contador++} - ${opcao}`;
-    select.appendChild(option);
-    copiasRestantes[opcao] = usadas + 1;
-  }
-});
 
       } catch (err) {
         lista.innerHTML = '<li>Erro ao carregar dados.</li>';
@@ -254,8 +201,7 @@ opcoesTodas.forEach(opcao => {
       e.preventDefault();
 
       const nome = document.getElementById('nome').value.trim();
-      const comidaSelect = document.getElementById('comida');
-      const comida = comidaSelect.value;
+      const comida = document.getElementById('comida').value.trim();
 
       if (!nome || !comida) {
         alert("Preencha os dois campos!");
@@ -268,9 +214,6 @@ opcoesTodas.forEach(opcao => {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({ nome, comida })
         });
-
-        // Remove opção selecionada
-        comidaSelect.remove(comidaSelect.selectedIndex);
 
         document.getElementById('formulario').reset();
         carregarComidas();
