@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Arraiá da Meri - Lista de Comidas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: url('bg.png') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    .logo-container {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .logo-container img {
+      width: 300px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    .box {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 25px 30px;
+      margin-bottom: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+      font-size: 22px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 0;
+    }
+
+    li {
+      background: #f3f3f3;
+      margin-bottom: 10px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    input, button, select {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-sizing: border-box;
+    }
+
+    input, select {
+      background-color: #fff;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #popup .popup-content {
+      position: relative;
+      animation: fadeZoomIn 0.4s ease-out;
+    }
+
+    #popup img {
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      max-width: 300px;
+      width: 90vw;
+    }
+
+    #popup button.close-btn {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      font-size: 20px;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    @keyframes fadeZoomIn {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body onload="carregarComidas()">
+  <div class="logo-container">
+    <img src="top-logo.png" alt="Logo do Evento">
+  </div>
+
+  <div class="container">
+    <div class="box">
+      <h2>Comidas que cada pessoa levará</h2>
+      <ul id="lista-comidas">
+        <li>Carregando...</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <h2>Coloque seu nome + a comida típica que irá levar para a festa</h2>
+      <form id="formulario">
+        <input type="text" id="nome" name="nome" placeholder="Seu nome" required />
+        <select id="comida" name="comida" required>
+          <option value="">Selecione uma comida</option>
+        </select>
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="popup">
+    <div class="popup-content">
+      <img src="save.png" alt="Confirmação" />
+      <button class="close-btn" onclick="fecharPopup()">×</button>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyLm9Ce0Zvv4tyHE_ebkek9CU4EXwEcvWQX4nKYpdkQnn2tjcR9DG1_JdzKW-eYN16D/exec";
+
+    const opcoesTodas = [
+      "1kg Canjiquinha", "1kg Canjiquinha", "1kg feijão amigo", "1kg feijão amigo", "1kg caldo verde",
+      "1kg caldo verde", "1kg milho verde", "1kg milho verde", "1kg milho verde", "1kg milho verde", "1kg milho verde",
+      "Arroz doce 50 pessoas", "Arroz doce 50 pessoas", "Canjica doce branca 50 pessoas", "Canjica amendoim 50 pessoas",
+      "Cocada 50 pessoas", "Cocada 50 pessoas", "Paçoca 50 pessoas", "Paçoca 50 pessoas", "Pudim leite moça",
+      "Pudim leite moça", "Broa fuba 50 pessoas", "Bolo doce 50 pessoas", "Bolo chocolate 50 pessoas",
+      "Pipoca já pronta 100 pacotes", "Amendoim doce 50 pacotes", "Suspiro quantidade 100 unidades", "Doce de abóbora 50 unidades",
+      "Doce leite 50 unidades", "Molho cachorro quente 50 pessoas", "150 pães de cachorro quente", "2kg salsichão já cozido",
+      "2kg salsichão já cozido", "10 maçãs do amor", "10 maçãs do amor", "10 maçãs do amor", "10 maçãs do amor", "10 maçãs do amor",
+      "100 brigadeiros", "100 salgados", "100 salgados", "Mini pizza", "Mini churros", "Mini pizza frita", "Bolo mandioca 50 pessoas",
+      "1kg caldo verde", "2 cxs bombons", "1 Pote doce de leite 50 pessoas", "1 torta salgada 50 pessoas", "Empadão de Frango", 
+      "Quentão 50 pessoas", 
+    ];
+
+    async function carregarComidas() {
+      const lista = document.getElementById('lista-comidas');
+      const select = document.getElementById('comida');
+      lista.innerHTML = '<li>Carregando...</li>';
+
+      try {
+        const res = await fetch(API_URL);
+        const dados = await res.json();
+
+        // Mostrar lista
+        lista.innerHTML = '';
+        const comidasJaEscolhidas = [];
+
+        dados.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = `${item.nome} - ${item.comida}`;
+          lista.appendChild(li);
+          comidasJaEscolhidas.push(item.comida);
+        });
+
+// Contar quantas vezes cada comida foi escolhida
+const contagemEscolhidas = {};
+comidasJaEscolhidas.forEach(comida => {
+  contagemEscolhidas[comida] = (contagemEscolhidas[comida] || 0) + 1;
+});
+
+// Contar quantas vezes cada comida aparece na lista original
+const contagemOriginais = {};
+opcoesTodas.forEach(comida => {
+  contagemOriginais[comida] = (contagemOriginais[comida] || 0) + 1;
+});
+
+// Gerar opções disponíveis
+select.innerHTML = '<option value="">Selecione uma comida</option>';
+let contador = 1;
+const copiasRestantes = {};
+
+// Copiar a lista original mantendo repetições
+opcoesTodas.forEach(opcao => {
+  const escolhidas = contagemEscolhidas[opcao] || 0;
+  const totalDisponivel = contagemOriginais[opcao];
+  const usadas = copiasRestantes[opcao] || 0;
+
+  if (usadas < totalDisponivel - escolhidas) {
+    const option = document.createElement('option');
+    option.value = opcao;
+    option.textContent = `Opção ${contador++} - ${opcao}`;
+    select.appendChild(option);
+    copiasRestantes[opcao] = usadas + 1;
+  }
+});
+
+      } catch (err) {
+        lista.innerHTML = '<li>Erro ao carregar dados.</li>';
+      }
+    }
+
+    document.getElementById('formulario').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const nome = document.getElementById('nome').value.trim();
+      const comidaSelect = document.getElementById('comida');
+      const comida = comidaSelect.value;
+
+      if (!nome || !comida) {
+        alert("Preencha os dois campos!");
+        return;
+      }
+
+      try {
+        await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ nome, comida })
+        });
+
+        // Remove opção selecionada
+        comidaSelect.remove(comidaSelect.selectedIndex);
+
+        document.getElementById('formulario').reset();
+        carregarComidas();
+        mostrarPopup();
+      } catch (err) {
+        alert("Erro ao enviar. Tente novamente.");
+      }
+    });
+
+    function mostrarPopup() {
+      const popup = document.getElementById("popup");
+      popup.style.display = "flex";
+      setTimeout(() => {
+        popup.style.opacity = "1";
+      }, 10);
+    }
+
+    function fecharPopup() {
+      const popup = document.getElementById("popup");
+      popup.style.opacity = "0";
+      setTimeout(() => {
+        popup.style.display = "none";
+      }, 300);
+    }
+
+    setInterval(carregarComidas, 60000);
+  </script>
+</body>
+</html>
