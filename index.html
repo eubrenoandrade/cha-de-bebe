@@ -7,15 +7,6 @@
   <link rel="icon" href="favicon.png" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
-    .logo-container {
-  text-align: center;
-  margin-top: 40px;
-}
-
-.logo-container img {
-  width: 300px;
-}
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -27,25 +18,34 @@
       height: 100%;
     }
 
-.background-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0; /* <- importante */
-  z-index: -1;
-  background: url('bg-desktop.png') no-repeat center center;
-  background-size: cover;
-  background-attachment: fixed;
-}
+    .background-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -1;
+      background: url('bg-desktop.png') no-repeat center center;
+      background-size: cover;
+      background-attachment: fixed;
+    }
 
-@media (max-width: 768px) {
-  .background-wrapper {
-    background: url('bg-mobile.png') no-repeat top center;
-    background-size: cover;
-    background-attachment: scroll;
-  }
-}
+    @media (max-width: 768px) {
+      .background-wrapper {
+        background: url('bg-mobile.png') no-repeat top center;
+        background-size: cover;
+        background-attachment: scroll;
+      }
+    }
+
+    .logo-container {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .logo-container img {
+      width: 300px;
+    }
 
     .content {
       position: relative;
@@ -105,13 +105,73 @@
     button:hover {
       background-color: #45a049;
     }
+
+    #popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #popup .popup-content {
+      position: relative;
+      z-index: 10000;
+      animation: fadeZoomIn 0.4s ease-out;
+    }
+
+    #popup img {
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      max-width: 300px;
+      width: 90vw;
+    }
+
+    #popup button.close-btn {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      font-size: 20px;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    @keyframes fadeZoomIn {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 <body onload="carregarComidas()">
   <div class="background-wrapper"></div>
+
   <div class="logo-container">
-  <img src="top-logo.png" alt="Logo do Evento" />
-</div>
+    <img src="top-logo.png" alt="Logo do Evento" />
+  </div>
 
   <div class="content">
     <div class="box">
@@ -128,6 +188,13 @@
         <input type="text" id="comida" name="comida" placeholder="Comida típica que vai levar" required />
         <button type="submit">Enviar</button>
       </form>
+    </div>
+  </div>
+
+  <div id="popup">
+    <div class="popup-content">
+      <img src="save.png" alt="Confirmação" />
+      <button class="close-btn" onclick="fecharPopup()">×</button>
     </div>
   </div>
 
@@ -174,10 +241,27 @@
 
         document.getElementById('formulario').reset();
         carregarComidas();
+        mostrarPopup();
       } catch (err) {
         alert("Erro ao enviar. Tente novamente.");
       }
     });
+
+    function mostrarPopup() {
+      const popup = document.getElementById("popup");
+      popup.style.display = "flex";
+      setTimeout(() => {
+        popup.style.opacity = "1";
+      }, 10);
+    }
+
+    function fecharPopup() {
+      const popup = document.getElementById("popup");
+      popup.style.opacity = "0";
+      setTimeout(() => {
+        popup.style.display = "none";
+      }, 300);
+    }
 
     setInterval(carregarComidas, 60000);
   </script>
