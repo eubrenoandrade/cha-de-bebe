@@ -15,13 +15,12 @@ body {
   background-attachment: fixed;
 }
 
-/* Mobile: remove o "fixed" */
 @media (max-width: 768px) {
   body {
-    background: url('bg-mobile.png') no-repeat center center;
+    background: url('bg-mobile.png') no-repeat center top;
     background-size: cover;
-    background-attachment: scroll; /* <- evita o esticamento no mobile */
-    background-position: top;
+    background-attachment: scroll;
+    min-height: 100vh;
   }
 }
     
