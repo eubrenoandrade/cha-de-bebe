@@ -20,24 +20,24 @@
       display: none;
     }
 
-    @media (max-width: 768px) {
-      body {
-        background: none;
-        height: 100dvh;
-        overflow-y: auto;
-      }
+@media (max-width: 768px) {
+  body {
+    background: none;
+    height: 100dvh;
+    overflow-y: auto;
+  }
 
-      .background-mobile {
-        display: block;
-        position: fixed;
-        top: 0; left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: url('bg-mobile.png') no-repeat top center;
-        background-size: cover;
-        z-index: -1;
-      }
-    }
+  .background-mobile {
+    display: block;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100dvh; /* aqui! */
+    background: url('bg-mobile.png') no-repeat top center;
+    background-size: cover;
+    z-index: -1;
+  }
+}
 
     .logo-container {
       text-align: center;
