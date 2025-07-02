@@ -15,29 +15,28 @@
       background-attachment: fixed;
     }
 
-    /* Fundo móvel fixo via div */
     .background-mobile {
       display: none;
     }
 
-@media (max-width: 768px) {
-  body {
-    background: none;
-    height: 100dvh;
-    overflow-y: auto;
-  }
+    @media (max-width: 768px) {
+      body {
+        background: none;
+        height: 100dvh;
+        overflow-y: auto;
+      }
 
-  .background-mobile {
-    display: block;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100dvh; /* aqui! */
-    background: url('bg-mobile.png') no-repeat top center;
-    background-size: cover;
-    z-index: -1;
-  }
-}
+      .background-mobile {
+        display: block;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw;
+        height: 100dvh;
+        background: url('bg-mobile.png') no-repeat top center;
+        background-size: cover;
+        z-index: -1;
+      }
+    }
 
     .logo-container {
       text-align: center;
@@ -104,10 +103,36 @@
       cursor: pointer;
       font-weight: 600;
       transition: background 0.3s;
+      position: relative;
     }
 
     button:hover {
       background-color: #45a049;
+    }
+
+    /* Spinner */
+    button.loading {
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    button.loading::after {
+      content: "";
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      border: 2px solid #fff;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: translateY(-50%) rotate(0deg); }
+      100% { transform: translateY(-50%) rotate(360deg); }
     }
 
     #popup {
@@ -171,7 +196,6 @@
 </head>
 <body onload="carregarComidas()">
 
-  <!-- Fundo móvel fixo -->
   <div class="background-mobile"></div>
 
   <div class="logo-container">
@@ -205,6 +229,7 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyLm9Ce0Zvv4tyHE_ebkek9CU4EXwEcvWQX4nKYpdkQnn2tjcR9DG1_JdzKW-eYN16D/exec";
+    let envioEmProgresso = false;
 
     async function carregarComidas() {
       const lista = document.getElementById('lista-comidas');
@@ -228,12 +253,23 @@
 
     document.getElementById('formulario').addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (envioEmProgresso) return;
+      envioEmProgresso = true;
+
+      const botao = e.target.querySelector("button");
+      botao.disabled = true;
+      botao.textContent = "Enviando...";
+      botao.classList.add("loading");
 
       const nome = document.getElementById('nome').value.trim();
       const comida = document.getElementById('comida').value.trim();
 
       if (!nome || !comida) {
         alert("Preencha os dois campos!");
+        botao.disabled = false;
+        botao.textContent = "Enviar";
+        botao.classList.remove("loading");
+        envioEmProgresso = false;
         return;
       }
 
@@ -250,6 +286,11 @@
       } catch (err) {
         alert("Erro ao enviar. Tente novamente.");
       }
+
+      botao.disabled = false;
+      botao.textContent = "Enviar";
+      botao.classList.remove("loading");
+      envioEmProgresso = false;
     });
 
     function mostrarPopup() {
@@ -268,7 +309,7 @@
       }, 300);
     }
 
-    setInterval(carregarComidas, 300000);
+    setInterval(carregarComidas, 300000); // 5 minutos
   </script>
 </body>
 </html>
