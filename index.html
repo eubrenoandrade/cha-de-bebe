@@ -7,18 +7,21 @@
   <title>Chá de Bebê</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
- body {
+body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  background: url('bg-desktop.png') no-repeat center center fixed;
+  background: url('bg-desktop.png') no-repeat center center;
   background-size: cover;
+  background-attachment: fixed;
 }
 
+/* Mobile: remove o "fixed" */
 @media (max-width: 768px) {
   body {
     background: url('bg-mobile.png') no-repeat center center;
     background-size: cover;
-    background-attachment: scroll; /* <- importante */
+    background-attachment: scroll; /* <- evita o esticamento no mobile */
+    background-position: top;
   }
 }
     
