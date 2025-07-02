@@ -7,25 +7,38 @@
   <title>Chá de Bebê</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background: url('bg-desktop.png') no-repeat center center;
-  background-size: cover;
-  background-attachment: fixed;
-}
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: url('bg-desktop.png') no-repeat center center;
+      background-size: cover;
+      background-attachment: fixed;
+    }
 
-@media (max-width: 768px) {
-  body {
-    height: 100vh;       /* altura fixa igual à tela */
-    overflow-y: auto;    /* scroll interno no body */
-    background: url('bg-mobile.png') no-repeat top center;
-    background-size: cover;
-    background-attachment: fixed;
-    margin: 0;
-  }
-}
-    
+    /* Fundo móvel fixo via div */
+    .background-mobile {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        background: none;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .background-mobile {
+        display: block;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: url('bg-mobile.png') no-repeat top center;
+        background-size: cover;
+        z-index: -1;
+      }
+    }
+
     .logo-container {
       text-align: center;
       margin-top: 40px;
@@ -157,6 +170,10 @@ body {
   </style>
 </head>
 <body onload="carregarComidas()">
+
+  <!-- Fundo móvel fixo -->
+  <div class="background-mobile"></div>
+
   <div class="logo-container">
     <img src="top-logo.png" alt="Logo do Evento">
   </div>
